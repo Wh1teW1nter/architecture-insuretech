@@ -39,6 +39,7 @@ Locustfile: `Task2/locustfile.py`
 
 Запуск (в отдельном терминале):
 ```bash
+cd Task2
 locust -f locustfile.py
 ```
 
