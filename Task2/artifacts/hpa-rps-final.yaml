@@ -1,0 +1,69 @@
+﻿apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"autoscaling/v2","kind":"HorizontalPodAutoscaler","metadata":{"annotations":{},"name":"insuretech-app-hpa-rps","namespace":"default"},"spec":{"behavior":{"scaleDown":{"policies":[{"periodSeconds":60,"type":"Percent","value":50}],"stabilizationWindowSeconds":30},"scaleUp":{"policies":[{"periodSeconds":15,"type":"Percent","value":100}],"stabilizationWindowSeconds":0}},"maxReplicas":10,"metrics":[{"pods":{"metric":{"name":"http_requests_rps"},"target":{"averageValue":"5","type":"AverageValue"}},"type":"Pods"}],"minReplicas":1,"scaleTargetRef":{"apiVersion":"apps/v1","kind":"Deployment","name":"insuretech-app"}}}
+  creationTimestamp: "2026-07-29T12:20:59Z"
+  name: insuretech-app-hpa-rps
+  namespace: default
+  resourceVersion: "97847"
+  uid: 75db215e-f1e1-4045-af10-0c9597ec2487
+spec:
+  behavior:
+    scaleDown:
+      policies:
+      - periodSeconds: 60
+        type: Percent
+        value: 50
+      selectPolicy: Max
+      stabilizationWindowSeconds: 30
+    scaleUp:
+      policies:
+      - periodSeconds: 15
+        type: Percent
+        value: 100
+      selectPolicy: Max
+      stabilizationWindowSeconds: 0
+  maxReplicas: 10
+  metrics:
+  - pods:
+      metric:
+        name: http_requests_rps
+      target:
+        averageValue: "5"
+        type: AverageValue
+    type: Pods
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: insuretech-app
+status:
+  conditions:
+  - lastTransitionTime: "2026-07-29T12:21:14Z"
+    message: recommended size matches current size
+    reason: ReadyForNewScale
+    status: "True"
+    type: AbleToScale
+  - lastTransitionTime: "2026-07-29T12:21:44Z"
+    message: the HPA was able to successfully calculate a replica count from pods
+      metric http_requests_rps
+    reason: ValidMetricFound
+    status: "True"
+    type: ScalingActive
+  - lastTransitionTime: "2026-07-29T12:22:14Z"
+    message: the desired count is within the acceptable range
+    reason: DesiredWithinRange
+    status: "False"
+    type: ScalingLimited
+  currentMetrics:
+  - pods:
+      current:
+        averageValue: 5657m
+      metric:
+        name: http_requests_rps
+    type: Pods
+  currentReplicas: 4
+  desiredReplicas: 4
+  lastScaleTime: "2026-07-29T12:21:59Z"

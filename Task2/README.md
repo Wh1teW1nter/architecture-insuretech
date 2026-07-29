@@ -1,81 +1,64 @@
 # Task 2 — Dynamic scaling (Minikube + HPA)
 
-## Важно про окружение
-Сейчас Minikube не стартует, потому что Docker Desktop Linux Engine недоступен.
-Для продолжения включите Docker Desktop (или договоритесь со мной — пересоздам Minikube на другом драйвере).
+## Результаты тестирования
 
-## 1) Подготовка кластера
+### Часть 1 — HPA по памяти (80%, max 10 replicas)
+
+**Команды:**
 ```bash
 minikube start
 minikube addons enable metrics-server
+minikube image build -t insuretech-test-app:4 Task2
+kubectl apply -f Task2/deployment.yaml
+kubectl apply -f Task2/service.yaml
+kubectl apply -f Task2/hpa-memory.yaml
+kubectl apply -f Task2/load-generator.yaml   # in-cluster нагрузка
 ```
 
-## 2) Сборка образа тестового приложения
-```bash
-# собрать Docker-образ прямо в окружение minikube (нужен доступ к Docker)
-minikube image build -t insuretech-test-app:1 . -- --file Task2\Dockerfile
-```
+**Результат:** HPA масштабировал Deployment с **1 → 2** реплик при `memory: 89%/80%`.
 
-## 3) Deployment / Service / HPA (memory)
-```bash
-kubectl apply -f Task2\deployment.yaml
-kubectl apply -f Task2\service.yaml
-kubectl apply -f Task2\hpa-memory.yaml
-```
+Доказательства: `artifacts/hpa-memory-describe.txt`, `artifacts/hpa-memory-watch-summary.txt`, `artifacts/pods-memory-final.txt`
 
-Проверка:
-```bash
-kubectl get pods -w
-kubectl get hpa -w
-```
+### Часть 2 — HPA по RPS (Prometheus + prometheus-adapter)
 
-Открыть приложение:
-```bash
-minikube service insuretech-app --url
-```
-
-## 4) Нагрузка (Locust)
-Locustfile: `Task2/locustfile.py`
-
-Запуск (в отдельном терминале):
-```bash
-cd Task2
-locust -f locustfile.py
-```
-
-UI: `http://localhost:8089`
-
-## 5) Prometheus и HPA по RPS
-### 5.1 Prometheus
+**Команды:**
 ```bash
 kubectl apply -f Task2/prometheus.yaml
-```
-
-Проверить метрики:
-```bash
-kubectl port-forward -n monitoring deploy/prometheus 9090:9090
-# затем открыть Prometheus: http://localhost:9090
-```
-
-### 5.2 prometheus-adapter (для HPA custom metrics)
-```bash
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo update
-
-helm install prometheus-adapter prometheus-community/prometheus-adapter \
-  -n monitoring --create-namespace \
-  -f Task2/prometheus-adapter-values.yaml
-```
-
-### 5.3 HPA по RPS
-```bash
+helm upgrade --install prometheus-adapter prometheus-community/prometheus-adapter \
+  -n monitoring -f Task2/prometheus-adapter-values.yaml
+kubectl delete hpa insuretech-app-hpa-memory
+kubectl scale deployment insuretech-app --replicas=1
 kubectl apply -f Task2/hpa-rps.yaml
+kubectl apply -f Task2/load-generator.yaml
 ```
 
-## 6) Что нужно положить в репозиторий (Task2)
-- Логи/скриншоты, подтверждающие рост `replicas` для:
-  - HPA memory
-  - HPA RPS (http_requests_rps)
+**Prometheus UI:** `kubectl port-forward -n monitoring svc/prometheus 9090:9090` → http://localhost:9090
 
-Сейчас пока этот блок будет заполнен после запуска кластера и выполнения тестов.
+**Результат:** HPA масштабировал Deployment с **1 → 4** реплик при `5657m/5` (~5.6 RPS на pod, target 5).
 
+Доказательства: `artifacts/hpa-rps-describe.txt`, `artifacts/prometheus-targets.json`, `artifacts/custom-metric-http_requests_rps.json`
+
+## Файлы
+
+| Файл | Назначение |
+|------|------------|
+| `deployment.yaml` | Deployment (replicas=1, limit 30Mi) |
+| `service.yaml` | Service ClusterIP |
+| `hpa-memory.yaml` | HPA по memory 80% |
+| `hpa-rps.yaml` | HPA по custom metric http_requests_rps |
+| `prometheus.yaml` | Prometheus + scrape config |
+| `prometheus-adapter-values.yaml` | Helm values для adapter |
+| `load-generator.yaml` | Job для in-cluster нагрузки |
+| `locustfile.py` | Locust-сценарий (альтернатива) |
+| `app.py`, `Dockerfile` | Тестовое приложение |
+
+## Locust (опционально)
+
+```bash
+kubectl port-forward svc/insuretech-app 18080:80
+cd Task2
+locust -f locustfile.py --host http://localhost:18080
+```
+
+UI: http://localhost:8089

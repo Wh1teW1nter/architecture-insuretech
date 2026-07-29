@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: insuretech-app
-          image: insuretech-test-app:1
+          image: insuretech-test-app:4
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
@@ -30,11 +30,14 @@ spec:
                   fieldPath: metadata.name
             - name: POD_NAMESPACE
               valueFrom:
-                fieldPath: metadata.namespace
+                fieldRef:
+                  fieldPath: metadata.namespace
             - name: ALLOC_CHUNK_BYTES
-              value: "262144" # 256KiB
+              value: "262144" # 256KiB per request
+            - name: MAX_ALLOC_CHUNKS
+              value: "50"
             - name: ALLOC_WINDOW_SECONDS
-              value: "10" # keep allocations for last 10s
+              value: "25"
           resources:
             requests:
               memory: 30Mi

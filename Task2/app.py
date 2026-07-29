@@ -23,7 +23,8 @@ http_requests_total = Counter(
     ["pod", "namespace"],
 )
 
-# Store allocations with timestamps; a background thread periodically frees old chunks.
+# Cap retained chunks to avoid OOM before HPA reacts (limit 30Mi, target 80% = 24Mi).
+MAX_ALLOC_CHUNKS = int(os.getenv("MAX_ALLOC_CHUNKS", "40"))
 _allocations = []
 _lock = threading.Lock()
 
@@ -48,8 +49,13 @@ class Handler(BaseHTTPRequestHandler):
 
             # Allocate and keep for a short window to increase RSS under load.
             with _lock:
-                # Use bytearray to ensure real memory is held.
-                _allocations.append((time.time(), bytearray(ALLOC_CHUNK_BYTES)))
+                chunk = bytearray(ALLOC_CHUNK_BYTES)
+                # Touch pages so RSS actually grows (important for metrics-server).
+                for i in range(0, len(chunk), 4096):
+                    chunk[i] = 1
+                _allocations.append((time.time(), chunk))
+                if len(_allocations) > MAX_ALLOC_CHUNKS:
+                    _allocations.pop(0)
 
             self.send_response(200)
             self.send_header("Content-Type", "text/plain; charset=utf-8")

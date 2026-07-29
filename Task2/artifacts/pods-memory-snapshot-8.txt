@@ -1,0 +1,2 @@
+﻿NAME                             READY   STATUS    RESTARTS      AGE
+insuretech-app-57d86897b-67vxq   1/1     Running   1 (79s ago)   3m32s

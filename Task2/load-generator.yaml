@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: load-generator
+spec:
+  parallelism: 2
+  completions: 2
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: curl
+          image: curlimages/curl:8.10.1
+          command:
+            - sh
+            - -c
+            - |
+              echo "Starting sustained load against insuretech-app..."
+              i=0
+              while [ $i -lt 500 ]; do
+                curl -s http://insuretech-app/ > /dev/null
+                sleep 0.05
+                i=$((i+1))
+              done
+              echo "Done"

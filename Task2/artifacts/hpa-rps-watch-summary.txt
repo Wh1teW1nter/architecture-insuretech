@@ -1,0 +1,11 @@
+﻿2026-07-29 15:21:35 pods=1 hpa=insuretech-app-hpa-rps   Deployment/insuretech-app   <unknown>/5   1     10    1     36s
+2026-07-29 15:21:40 pods=1 hpa=insuretech-app-hpa-rps   Deployment/insuretech-app   <unknown>/5   1     10    1     41s
+2026-07-29 15:21:45 pods=2 hpa=insuretech-app-hpa-rps   Deployment/insuretech-app   15731m/5   1     10    1     46s
+2026-07-29 15:21:50 pods=2 hpa=insuretech-app-hpa-rps   Deployment/insuretech-app   15731m/5   1     10    1     52s
+2026-07-29 15:21:56 pods=2 hpa=insuretech-app-hpa-rps   Deployment/insuretech-app   15731m/5   1     10    1     57s
+2026-07-29 15:22:01 pods=4 hpa=insuretech-app-hpa-rps   Deployment/insuretech-app   16211m/5   1     10    2     62s
+2026-07-29 15:22:06 pods=4 hpa=insuretech-app-hpa-rps   Deployment/insuretech-app   16211m/5   1     10    2     67s
+2026-07-29 15:22:11 pods=4 hpa=insuretech-app-hpa-rps   Deployment/insuretech-app   16211m/5   1     10    2     72s
+2026-07-29 15:22:16 pods=4 hpa=insuretech-app-hpa-rps   Deployment/insuretech-app   5657m/5   1     10    4     77s
+2026-07-29 15:22:21 pods=4 hpa=insuretech-app-hpa-rps   Deployment/insuretech-app   5657m/5   1     10    4     82s
+2026-07-29 15:22:26 pods=4 hpa=insuretech-app-hpa-rps   Deployment/insuretech-app   5657m/5   1     10    4     87s
