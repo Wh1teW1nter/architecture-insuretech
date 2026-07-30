@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: insuretech-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: insuretech-app
+  template:
+    metadata:
+      labels:
+        app: insuretech-app
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8080"
+    spec:
+      containers:
+        - name: insuretech-app
+          image: insuretech-test-app:4
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: ALLOC_CHUNK_BYTES
+              value: "262144" # 256KiB per request
+            - name: MAX_ALLOC_CHUNKS
+              value: "50"
+            - name: ALLOC_WINDOW_SECONDS
+              value: "25"
+          resources:
+            requests:
+              memory: 30Mi
+            limits:
+              memory: 30Mi
+

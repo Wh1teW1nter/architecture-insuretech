@@ -1,1 +1,4 @@
 ﻿drawio-libs/
+
+__pycache__/
+*.pyc

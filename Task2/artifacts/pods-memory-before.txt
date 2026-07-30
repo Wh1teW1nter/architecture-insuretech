@@ -1,0 +1,2 @@
+﻿NAME                             READY   STATUS    RESTARTS   AGE   IP            NODE       NOMINATED NODE   READINESS GATES
+insuretech-app-57d86897b-67vxq   1/1     Running   0          2m    10.244.0.24   minikube   <none>           <none>

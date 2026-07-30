@@ -1,0 +1,2 @@
+﻿NAME                        REFERENCE                   TARGETS                 MINPODS   MAXPODS   REPLICAS   AGE
+insuretech-app-hpa-memory   Deployment/insuretech-app   memory: <unknown>/80%   1         10        1          6m21s

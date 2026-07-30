@@ -1,0 +1,5 @@
+﻿NAME                              READY   STATUS    RESTARTS   AGE     IP            NODE       NOMINATED NODE   READINESS GATES
+insuretech-app-7bf5b465fb-27pmz   1/1     Running   0          4m38s   10.244.0.46   minikube   <none>           <none>
+insuretech-app-7bf5b465fb-65t79   1/1     Running   0          30s     10.244.0.53   minikube   <none>           <none>
+insuretech-app-7bf5b465fb-7vpmg   1/1     Running   0          30s     10.244.0.52   minikube   <none>           <none>
+insuretech-app-7bf5b465fb-l5x8z   1/1     Running   0          45s     10.244.0.51   minikube   <none>           <none>

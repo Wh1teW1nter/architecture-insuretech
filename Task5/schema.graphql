@@ -1,0 +1,61 @@
+# GraphQL schema for client-info
+# Equivalent of REST API (Swagger 2.0):
+#   GET /clients/{id}
+#   GET /clients/{id}/documents
+#   GET /clients/{id}/relatives
+#
+# Consumers can request Client alone or with nested documents/relatives
+# in a single round-trip, selecting only needed fields.
+
+"""Идентификатор клиента"""
+scalar ID
+
+"""Клиент сервиса управления клиентскими данными"""
+type Client {
+  id: ID!
+  name: String!
+  age: Int!
+  """Документы клиента (опционально в запросе — аналог GET /clients/{id}/documents)"""
+  documents: [Document!]!
+  """Родственники клиента (опционально в запросе — аналог GET /clients/{id}/relatives)"""
+  relatives: [Relative!]!
+}
+
+"""Документ клиента"""
+type Document {
+  id: ID!
+  type: String!
+  number: String!
+  issueDate: String!
+  expiryDate: String!
+}
+
+"""Родственник клиента"""
+type Relative {
+  id: ID!
+  relationType: String!
+  name: String!
+  age: Int!
+}
+
+type Query {
+  """
+  Получить клиента по ID.
+  Аналог REST GET /clients/{id}.
+  Поля documents / relatives запрашиваются только при явном указании в selection set
+  (эквивалент отдельных REST-ресурсов без лишних round-trip).
+  """
+  client(id: ID!): Client
+
+  """
+  Явный запрос только документов клиента.
+  Аналог REST GET /clients/{id}/documents.
+  """
+  clientDocuments(clientId: ID!): [Document!]!
+
+  """
+  Явный запрос только родственников клиента.
+  Аналог REST GET /clients/{id}/relatives.
+  """
+  clientRelatives(clientId: ID!): [Relative!]!
+}

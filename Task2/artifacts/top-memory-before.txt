@@ -1,0 +1,2 @@
+﻿NAME                             CPU(cores)   MEMORY(bytes)   
+insuretech-app-57d86897b-67vxq   1m           14Mi            
